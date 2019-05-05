@@ -1,5 +1,5 @@
 package sample;
 
 component Blank {
-  id = 1001;
+  id = 1004;
 }

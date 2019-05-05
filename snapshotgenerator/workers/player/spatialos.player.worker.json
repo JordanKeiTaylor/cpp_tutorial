@@ -1,0 +1,86 @@
+{
+  "build": {
+    "tasks_filename": "build.json"
+  },
+  "bridge": {
+    "worker_attribute_set": {
+      "attributes": [
+        "player"
+      ]
+    },
+    "entity_interest": {
+      "range_entity_interest": {
+        "radius": 10
+      }
+    },
+    "streaming_query": [
+      {
+        "global_component_streaming_query": {
+          "component_name": "othello.Color"
+        }
+      }
+    ],
+    "component_delivery": {
+      "default": "RELIABLE_ORDERED",
+      "checkout_all_initially": true
+    }
+  },
+  "managed": {
+    "linux": {
+      "artifact_name": "player@Linux.zip",
+      "command": "./player",
+      "arguments": [
+        "${IMPROBABLE_RECEPTIONIST_HOST}",
+        "${IMPROBABLE_RECEPTIONIST_PORT}",
+        "${IMPROBABLE_WORKER_ID}"
+      ]
+    },
+    "windows": {
+      "artifact_name": "player@Windows.zip",
+      "command": "./player.exe",
+      "arguments": [
+        "${IMPROBABLE_RECEPTIONIST_HOST}",
+        "${IMPROBABLE_RECEPTIONIST_PORT}",
+        "${IMPROBABLE_WORKER_ID}"
+      ]
+    },
+    "macos": {
+      "artifact_name": "player@Mac.zip",
+      "command": "./player",
+      "arguments": [
+        "${IMPROBABLE_RECEPTIONIST_HOST}",
+        "${IMPROBABLE_RECEPTIONIST_PORT}",
+        "${IMPROBABLE_WORKER_ID}"
+      ]
+    }
+  },
+  "external": {
+    "local": {
+      "run_type": "EXECUTABLE_ZIP",
+      "linux": {
+        "artifact_name": "player@Linux.zip",
+        "command": "./player",
+        "arguments": [
+          "localhost",
+          "7777"
+        ]
+      },
+      "windows": {
+        "artifact_name": "player@Windows.zip",
+        "command": "./player.exe",
+        "arguments": [
+          "localhost",
+          "7777"
+        ]
+      },
+      "macos": {
+        "artifact_name": "player@Mac.zip",
+        "command": "./player",
+        "arguments": [
+          "localhost",
+          "7777"
+        ]
+      }
+    }
+  }
+}
