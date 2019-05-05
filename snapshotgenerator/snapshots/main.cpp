@@ -14,10 +14,10 @@ worker::Entity CreateGameEntry() {
     e.Add<improbable::Persistence>( {} );
 
     auto anyWorkerRequirementSet = improbable::WorkerRequirementSet{
-            worker::List<improbable::WorkerAttributeSet>{{worker::List<std::string>{"player"}, worker::List<std::string>{"game"}}}
+            worker::List<improbable::WorkerAttributeSet>{{worker::List<std::string>{"example_attribute_of_external_worker"}, worker::List<std::string>{"example_attribute_of_managed_worker"}}}
     };
     auto gameWorkerRequirementSet = improbable::WorkerRequirementSet{
-            worker::List<improbable::WorkerAttributeSet>{{worker::List<std::string>{"game"}}}
+            worker::List<improbable::WorkerAttributeSet>{{worker::List<std::string>{"example_attribute_of_managed_worker"}}}
     };
 
     e.Add<othello::Game>( {} );
@@ -36,7 +36,7 @@ worker::Entity CreatePlayerEntry(bool black) {
     e.Add<improbable::Persistence>( {} );
 
     auto gameWorkerRequirementSet = improbable::WorkerRequirementSet{
-            worker::List<improbable::WorkerAttributeSet>{{worker::List<std::string>{"game"}}}
+            worker::List<improbable::WorkerAttributeSet>{{worker::List<std::string>{"example_attribute_of_managed_worker"}}}
     };
 
     e.Add<improbable::EntityAcl>( /* read */ { gameWorkerRequirementSet,
@@ -61,10 +61,10 @@ worker::Entity CreateDiscEntry(int64_t x, int64_t z, bool black) {
     e.Add<improbable::Persistence>( {} );
 
     auto anyWorkerRequirementSet = improbable::WorkerRequirementSet{
-            worker::List<improbable::WorkerAttributeSet>{{worker::List<std::string>{"player"}, worker::List<std::string>{"game"}}}
+            worker::List<improbable::WorkerAttributeSet>{{worker::List<std::string>{"example_attribute_of_managed_worker"}, worker::List<std::string>{"example_attribute_of_external_worker"}}}
     };
     auto gameWorkerRequirementSet = improbable::WorkerRequirementSet{
-            worker::List<improbable::WorkerAttributeSet>{{worker::List<std::string>{"game"}}}
+            worker::List<improbable::WorkerAttributeSet>{{worker::List<std::string>{"example_attribute_of_managed_worker"}}}
     };
 
     e.Add<improbable::EntityAcl>( /* read */ { anyWorkerRequirementSet,
