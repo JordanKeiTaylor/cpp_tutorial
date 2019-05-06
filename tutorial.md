@@ -119,7 +119,7 @@ while (is_connected) {
 
 Build the project and run spatial local start. If everythings worked, you will now see a single entity, the one with entity id 1, flashing back and forth between two positions.
 
-
+To see this functioning, checkout and run commit "6f58e19a055e6137c32784d6e240399d6de9b68e"
 
 
 	###Feature 3: Capture all the Position components the worker is authoritative over locally, move them all together
