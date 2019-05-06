@@ -150,12 +150,28 @@ int main(int argc, char** argv) {
 
     while (is_connected) {
         dispatcher.Process(connection.GetOpList(kGetOpListTimeoutInMilliseconds));
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
-        for (auto &entityId : entities) // access by reference to avoid copying
+        for (auto &entityWrapper : wrappers) // access by reference to avoid copying
         {  
-             connection.SendComponentUpdate<improbable::Position>(entityId,
-                improbable::Position::Update().set_coords(improbable::Coordinates(50,50,50)));
+            double new_x = entityWrapper.coords.x() + 1;
+            double new_y = entityWrapper.coords.y() + 1;
+            double new_z = entityWrapper.coords.z() + 1;
+
+             connection.SendComponentUpdate<improbable::Position>(entityWrapper.id,
+                improbable::Position::Update().set_coords(
+                    improbable::Coordinates
+                    (
+                        new_x,
+                        new_y,
+                        new_z
+                    )
+                )
+            );
+
+            entityWrapper.coords.set_x(new_x);
+            entityWrapper.coords.set_y(new_y);
+            entityWrapper.coords.set_z(new_z);
         }
 
     }
