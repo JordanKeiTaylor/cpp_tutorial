@@ -1,0 +1,54 @@
+package othello;
+
+enum Direction {
+    NORTH = 0;
+    EAST = 1;
+    SOUTH = 2;
+    WEST = 3;
+}
+
+type Void{}
+
+type SuccessResult {
+    bool success = 1;
+}
+
+type CreatePlayerResult {
+    bool black = 1;
+}
+
+type PlaceDiscRequest {
+    int64 x = 1;
+    int64 z = 2;
+}
+
+type FindColorRequest {
+    Direction dir = 1;
+    bool black = 2;
+}
+
+component Game {
+    id = 1000;
+
+    command CreatePlayerResult create_player(Void);
+    command SuccessResult place_disc(PlaceDiscRequest);
+}
+
+component Color {
+	id = 1001;
+	bool black = 1;
+
+    command SuccessResult find_color(FindColorRequest);
+}
+
+component Player {
+    id = 1002;
+
+    string worker = 1;
+}
+
+component TurnTaker {
+    id = 1003;
+
+    command Void your_turn(Void);
+}
