@@ -19,6 +19,7 @@ worker::Entity CreateExampleEntity() {
 
     e.Add<improbable::EntityAcl>( /* read */ { managedWorkerRequirementSet,
                                                      /* write */ {
+                                                       { improbable::Position::ComponentId, managedWorkerRequirementSet },
                                                        { improbable::EntityAcl::ComponentId, managedWorkerRequirementSet }
                                                } } );
 
