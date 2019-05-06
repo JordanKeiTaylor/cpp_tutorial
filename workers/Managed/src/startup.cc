@@ -4,6 +4,8 @@
 #include <improbable/worker.h>
 #include <improbable/standard_library.h>
 #include <iostream>
+#include <chrono>
+#include <thread>
 
 // Use this to make a worker::ComponentRegistry.
 // For example use worker::Components<improbable::Position, improbable::Metadata> to track these common components
@@ -115,6 +117,32 @@ int main(int argc, char** argv) {
 
     while (is_connected) {
         dispatcher.Process(connection.GetOpList(kGetOpListTimeoutInMilliseconds));
+        
+         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+         connection.SendComponentUpdate<improbable::Position>(1,
+                improbable::Position::Update().set_coords(
+                    improbable::Coordinates
+                    (
+                        0,
+                        0,
+                        0
+                    )
+                )
+            );
+
+        connection.SendComponentUpdate<improbable::Position>(1,
+                improbable::Position::Update().set_coords(
+                    improbable::Coordinates
+                    (
+                        5,
+                        5,
+                        5
+                    )
+                )
+            );
+
+
     }
 
     return ErrorExitStatus;
