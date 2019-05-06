@@ -16,6 +16,31 @@ const int ErrorExitStatus = 1;
 const std::string kLoggerName = "startup.cc";
 const std::uint32_t kGetOpListTimeoutInMilliseconds = 100;
 
+class EntityWrapper {
+
+ public:
+     worker::EntityId id;
+     improbable::Coordinates coords;
+
+ public:
+      EntityWrapper(worker::EntityId given_id, improbable::Coordinates given_coords){
+        id = given_id;
+        coords = given_coords;
+      }
+
+
+
+      worker::EntityId getId(){
+        return id;
+      }
+
+      improbable::Coordinates getCoordinates(){
+        return coords;
+      }
+
+
+};
+
 worker::Connection ConnectWithReceptionist(const std::string hostname,
                                            const std::uint16_t port,
                                            const std::string& worker_id,
@@ -59,6 +84,7 @@ int main(int argc, char** argv) {
 
     std::vector<std::string> arguments;
     std::vector<worker::EntityId> entities;
+    std::vector<EntityWrapper> wrappers;
 
     // if no arguments are supplied, use the defaults for a local deployment
     if (argc == 1) {
@@ -103,8 +129,9 @@ int main(int argc, char** argv) {
         is_connected = false;
     });
 
-    dispatcher.OnAddEntity([&](const worker::AddEntityOp& op) {
+    dispatcher.OnAddComponent<improbable::Position>([&](const worker::AddComponentOp<improbable::Position>& op) {
         std::cout << "Entity " << op.EntityId << " added." << std::endl;
+        wrappers.push_back(EntityWrapper(op.EntityId,op.Data.coords()));
         entities.push_back(op.EntityId);
     });
 
@@ -128,7 +155,7 @@ int main(int argc, char** argv) {
         for (auto &entityId : entities) // access by reference to avoid copying
         {  
              connection.SendComponentUpdate<improbable::Position>(entityId,
-                improbable::Position::Update().set_coords(improbable::Coordinates(100,100,100)));
+                improbable::Position::Update().set_coords(improbable::Coordinates(50,50,50)));
         }
 
     }
