@@ -63,7 +63,7 @@ worker::Entity CreateExampleEntity() {
 
 Now double check that you have successfully given the worker authority by running the simulation locally again. If the worker has successfully been given authority you should be able to click on one of the example entities, click on the Authoritative workers tab, and see the Managed worker listed next to the entities Position component.
 
-
+To see this working, check out commit "bdecac154d4cd5b893f02b4766e3e9810e917b80"
 
 	###Feature 2: Set up a game loop and move one entity around the world randomly
 

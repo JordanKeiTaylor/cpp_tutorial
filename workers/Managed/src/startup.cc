@@ -4,6 +4,8 @@
 #include <improbable/worker.h>
 #include <improbable/standard_library.h>
 #include <iostream>
+#include <chrono>
+#include <thread>
 
 // Use this to make a worker::ComponentRegistry.
 // For example use worker::Components<improbable::Position, improbable::Metadata> to track these common components
