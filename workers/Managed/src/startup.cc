@@ -4,6 +4,8 @@
 #include <improbable/worker.h>
 #include <improbable/standard_library.h>
 #include <iostream>
+#include <chrono>
+#include <thread>
 
 // Use this to make a worker::ComponentRegistry.
 // For example use worker::Components<improbable::Position, improbable::Metadata> to track these common components
@@ -56,6 +58,7 @@ int main(int argc, char** argv) {
     };
 
     std::vector<std::string> arguments;
+    std::vector<worker::EntityId> entities;
 
     // if no arguments are supplied, use the defaults for a local deployment
     if (argc == 1) {
@@ -100,6 +103,11 @@ int main(int argc, char** argv) {
         is_connected = false;
     });
 
+    dispatcher.OnAddEntity([&](const worker::AddEntityOp& op) {
+        std::cout << "Entity " << op.EntityId << " added." << std::endl;
+        entities.push_back(op.EntityId);
+    });
+
     // Print log messages received from SpatialOS
     dispatcher.OnLogMessage([&](const worker::LogMessageOp& op) {
         if (op.Level == worker::LogLevel::kFatal) {
@@ -115,6 +123,14 @@ int main(int argc, char** argv) {
 
     while (is_connected) {
         dispatcher.Process(connection.GetOpList(kGetOpListTimeoutInMilliseconds));
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+        for (auto &entityId : entities) // access by reference to avoid copying
+        {  
+             connection.SendComponentUpdate<improbable::Position>(entityId,
+                improbable::Position::Update().set_coords(improbable::Coordinates(100,100,100)));
+        }
+
     }
 
     return ErrorExitStatus;
