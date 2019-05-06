@@ -5,10 +5,6 @@
 /Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/snapshotgenerator/cmake-build/schema/CMakeFiles/edit_cache.dir
 /Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/snapshotgenerator/cmake-build/schema/CMakeFiles/Schema.dir
 /Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/snapshotgenerator/cmake-build/schema/CMakeFiles/schema-gen.dir
-/Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/snapshotgenerator/cmake-build/workers/game/CMakeFiles/gameZip.dir
-/Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/snapshotgenerator/cmake-build/workers/game/CMakeFiles/rebuild_cache.dir
-/Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/snapshotgenerator/cmake-build/workers/game/CMakeFiles/edit_cache.dir
-/Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/snapshotgenerator/cmake-build/workers/game/CMakeFiles/game.dir
 /Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/snapshotgenerator/cmake-build/snapshots/CMakeFiles/rebuild_cache.dir
 /Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/snapshotgenerator/cmake-build/snapshots/CMakeFiles/edit_cache.dir
 /Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/snapshotgenerator/cmake-build/snapshots/CMakeFiles/create_default_snapshot.dir

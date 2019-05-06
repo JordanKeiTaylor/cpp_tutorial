@@ -150,32 +150,6 @@ schema-gen/fast:
 .PHONY : schema-gen/fast
 
 #=============================================================================
-# Target rules for targets named gameZip
-
-# Build rule for target.
-gameZip: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 gameZip
-.PHONY : gameZip
-
-# fast build rule for target.
-gameZip/fast:
-	$(MAKE) -f workers/game/CMakeFiles/gameZip.dir/build.make workers/game/CMakeFiles/gameZip.dir/build
-.PHONY : gameZip/fast
-
-#=============================================================================
-# Target rules for targets named game
-
-# Build rule for target.
-game: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 game
-.PHONY : game
-
-# fast build rule for target.
-game/fast:
-	$(MAKE) -f workers/game/CMakeFiles/game.dir/build.make workers/game/CMakeFiles/game.dir/build
-.PHONY : game/fast
-
-#=============================================================================
 # Target rules for targets named create_default_snapshot
 
 # Build rule for target.
@@ -212,8 +186,6 @@ help:
 	@echo "... dependencies"
 	@echo "... Schema"
 	@echo "... schema-gen"
-	@echo "... gameZip"
-	@echo "... game"
 	@echo "... create_default_snapshot"
 	@echo "... create_snapshot"
 .PHONY : help

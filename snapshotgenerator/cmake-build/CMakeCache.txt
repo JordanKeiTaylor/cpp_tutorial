@@ -222,12 +222,6 @@ create_snapshot_BINARY_DIR:STATIC=/Users/jordantaylor/Desktop/newcpptutorial/Cpp
 //Value Computed by CMake
 create_snapshot_SOURCE_DIR:STATIC=/Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/snapshotgenerator/snapshots
 
-//Value Computed by CMake
-game_BINARY_DIR:STATIC=/Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/snapshotgenerator/cmake-build/workers/game
-
-//Value Computed by CMake
-game_SOURCE_DIR:STATIC=/Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/snapshotgenerator/workers/game
-
 
 ########################
 # INTERNAL cache entries
@@ -321,7 +315,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=4
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=3
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP

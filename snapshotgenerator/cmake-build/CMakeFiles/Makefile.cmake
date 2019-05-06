@@ -16,7 +16,6 @@ set(CMAKE_MAKEFILE_DEPENDS
   "../schema/CMakeLists.txt"
   "../snapshots/CMakeLists.txt"
   "../spatialos_worker_packages.json.in"
-  "../workers/game/CMakeLists.txt"
   "/usr/local/Cellar/cmake/3.14.3/share/cmake/Modules/CMakeCCompiler.cmake.in"
   "/usr/local/Cellar/cmake/3.14.3/share/cmake/Modules/CMakeCCompilerABI.c"
   "/usr/local/Cellar/cmake/3.14.3/share/cmake/Modules/CMakeCInformation.cmake"
@@ -124,7 +123,6 @@ set(CMAKE_MAKEFILE_PRODUCTS
   "spatialos_worker_packages.json"
   "CMakeFiles/CMakeDirectoryInformation.cmake"
   "schema/CMakeFiles/CMakeDirectoryInformation.cmake"
-  "workers/game/CMakeFiles/CMakeDirectoryInformation.cmake"
   "snapshots/CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
@@ -133,8 +131,6 @@ set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/dependencies.dir/DependInfo.cmake"
   "schema/CMakeFiles/Schema.dir/DependInfo.cmake"
   "schema/CMakeFiles/schema-gen.dir/DependInfo.cmake"
-  "workers/game/CMakeFiles/gameZip.dir/DependInfo.cmake"
-  "workers/game/CMakeFiles/game.dir/DependInfo.cmake"
   "snapshots/CMakeFiles/create_default_snapshot.dir/DependInfo.cmake"
   "snapshots/CMakeFiles/create_snapshot.dir/DependInfo.cmake"
   )

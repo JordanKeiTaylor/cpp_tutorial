@@ -124,8 +124,8 @@ schema/preinstall:
 # Target rules for target schema/CMakeFiles/Schema.dir
 
 # All Build rule for target.
-schema/CMakeFiles/Schema.dir/all: CMakeFiles/dependencies.dir/all
 schema/CMakeFiles/Schema.dir/all: schema/CMakeFiles/schema-gen.dir/all
+schema/CMakeFiles/Schema.dir/all: CMakeFiles/dependencies.dir/all
 	$(MAKE) -f schema/CMakeFiles/Schema.dir/build.make schema/CMakeFiles/Schema.dir/depend
 	$(MAKE) -f schema/CMakeFiles/Schema.dir/build.make schema/CMakeFiles/Schema.dir/build
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/snapshotgenerator/cmake-build/CMakeFiles --progress-num=1,2,3,4 "Built target Schema"
@@ -187,100 +187,6 @@ schema/CMakeFiles/schema-gen.dir/clean:
 
 # clean rule for target.
 clean: schema/CMakeFiles/schema-gen.dir/clean
-
-.PHONY : clean
-
-#=============================================================================
-# Directory level rules for directory workers/game
-
-# Convenience name for "all" pass in the directory.
-workers/game/all: workers/game/CMakeFiles/gameZip.dir/all
-workers/game/all: workers/game/CMakeFiles/game.dir/all
-
-.PHONY : workers/game/all
-
-# Convenience name for "clean" pass in the directory.
-workers/game/clean: workers/game/CMakeFiles/gameZip.dir/clean
-workers/game/clean: workers/game/CMakeFiles/game.dir/clean
-
-.PHONY : workers/game/clean
-
-# Convenience name for "preinstall" pass in the directory.
-workers/game/preinstall:
-
-.PHONY : workers/game/preinstall
-
-#=============================================================================
-# Target rules for target workers/game/CMakeFiles/gameZip.dir
-
-# All Build rule for target.
-workers/game/CMakeFiles/gameZip.dir/all: workers/game/CMakeFiles/game.dir/all
-	$(MAKE) -f workers/game/CMakeFiles/gameZip.dir/build.make workers/game/CMakeFiles/gameZip.dir/depend
-	$(MAKE) -f workers/game/CMakeFiles/gameZip.dir/build.make workers/game/CMakeFiles/gameZip.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/snapshotgenerator/cmake-build/CMakeFiles --progress-num= "Built target gameZip"
-.PHONY : workers/game/CMakeFiles/gameZip.dir/all
-
-# Include target in all.
-all: workers/game/CMakeFiles/gameZip.dir/all
-
-.PHONY : all
-
-# Build rule for subdir invocation for target.
-workers/game/CMakeFiles/gameZip.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/snapshotgenerator/cmake-build/CMakeFiles 6
-	$(MAKE) -f CMakeFiles/Makefile2 workers/game/CMakeFiles/gameZip.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/snapshotgenerator/cmake-build/CMakeFiles 0
-.PHONY : workers/game/CMakeFiles/gameZip.dir/rule
-
-# Convenience name for target.
-gameZip: workers/game/CMakeFiles/gameZip.dir/rule
-
-.PHONY : gameZip
-
-# clean rule for target.
-workers/game/CMakeFiles/gameZip.dir/clean:
-	$(MAKE) -f workers/game/CMakeFiles/gameZip.dir/build.make workers/game/CMakeFiles/gameZip.dir/clean
-.PHONY : workers/game/CMakeFiles/gameZip.dir/clean
-
-# clean rule for target.
-clean: workers/game/CMakeFiles/gameZip.dir/clean
-
-.PHONY : clean
-
-#=============================================================================
-# Target rules for target workers/game/CMakeFiles/game.dir
-
-# All Build rule for target.
-workers/game/CMakeFiles/game.dir/all: schema/CMakeFiles/Schema.dir/all
-	$(MAKE) -f workers/game/CMakeFiles/game.dir/build.make workers/game/CMakeFiles/game.dir/depend
-	$(MAKE) -f workers/game/CMakeFiles/game.dir/build.make workers/game/CMakeFiles/game.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/snapshotgenerator/cmake-build/CMakeFiles --progress-num=7,8 "Built target game"
-.PHONY : workers/game/CMakeFiles/game.dir/all
-
-# Include target in all.
-all: workers/game/CMakeFiles/game.dir/all
-
-.PHONY : all
-
-# Build rule for subdir invocation for target.
-workers/game/CMakeFiles/game.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/snapshotgenerator/cmake-build/CMakeFiles 6
-	$(MAKE) -f CMakeFiles/Makefile2 workers/game/CMakeFiles/game.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/snapshotgenerator/cmake-build/CMakeFiles 0
-.PHONY : workers/game/CMakeFiles/game.dir/rule
-
-# Convenience name for target.
-game: workers/game/CMakeFiles/game.dir/rule
-
-.PHONY : game
-
-# clean rule for target.
-workers/game/CMakeFiles/game.dir/clean:
-	$(MAKE) -f workers/game/CMakeFiles/game.dir/build.make workers/game/CMakeFiles/game.dir/clean
-.PHONY : workers/game/CMakeFiles/game.dir/clean
-
-# clean rule for target.
-clean: workers/game/CMakeFiles/game.dir/clean
 
 .PHONY : clean
 

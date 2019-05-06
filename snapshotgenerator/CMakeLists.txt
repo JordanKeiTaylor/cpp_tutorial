@@ -12,5 +12,4 @@ add_custom_target(dependencies ALL ${SPATIAL_CMD} package unpack --package_file 
 link_directories(${CMAKE_CURRENT_BINARY_DIR}/dependencies/worker_sdk/lib)
 
 add_subdirectory(schema)
-add_subdirectory(workers/game)
 add_subdirectory(snapshots)
