@@ -212,5 +212,7 @@ while (is_connected) {
 
 Build the project and start a local simulation. You should see the entities moving up and to the right.
 
+To see this working, checkout commit "afea5e7865f4fa39656be26f19533dbebccbab02"
+
 
 	###Feature 4: Now, use your knowledge to initialize multiple instances of the Managed worker, and add logic to the vector that removes entities from the vector once the worker loses authority. May need to read up on the authority change op.
