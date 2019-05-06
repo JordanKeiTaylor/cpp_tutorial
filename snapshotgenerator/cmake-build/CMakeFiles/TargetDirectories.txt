@@ -1,0 +1,11 @@
+/Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/snapshotgenerator/cmake-build/CMakeFiles/rebuild_cache.dir
+/Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/snapshotgenerator/cmake-build/CMakeFiles/edit_cache.dir
+/Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/snapshotgenerator/cmake-build/CMakeFiles/dependencies.dir
+/Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/snapshotgenerator/cmake-build/schema/CMakeFiles/rebuild_cache.dir
+/Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/snapshotgenerator/cmake-build/schema/CMakeFiles/edit_cache.dir
+/Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/snapshotgenerator/cmake-build/schema/CMakeFiles/Schema.dir
+/Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/snapshotgenerator/cmake-build/schema/CMakeFiles/schema-gen.dir
+/Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/snapshotgenerator/cmake-build/snapshots/CMakeFiles/rebuild_cache.dir
+/Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/snapshotgenerator/cmake-build/snapshots/CMakeFiles/edit_cache.dir
+/Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/snapshotgenerator/cmake-build/snapshots/CMakeFiles/create_default_snapshot.dir
+/Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/snapshotgenerator/cmake-build/snapshots/CMakeFiles/create_snapshot.dir

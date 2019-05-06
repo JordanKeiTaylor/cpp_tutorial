@@ -1,0 +1,51 @@
+{
+  "template": "small",
+  "world": {
+    "chunkEdgeLengthMeters": 8,
+    "streaming_query_interval": 1,
+    "snapshots": {
+      "snapshotWritePeriodSeconds": 0
+    },
+    "dimensions": {
+      "xMeters": 8,
+      "zMeters": 8
+    }
+  },
+  "workers": [
+    {
+      "worker_type": "player",
+      "permissions": [{
+        "entity_creation": {
+          "allow": false
+        },
+        "entity_deletion": {
+          "allow": false
+        },
+        "entity_query": {
+          "allow": true,
+          "components": [ "othello.Game", "othello.Color", "othello.Player" ]
+        }
+      }]
+    },
+    {
+      "worker_type": "game",
+      "permissions": [{
+        "entity_creation": {
+          "allow": true
+        },
+        "entity_deletion": {
+          "allow": true
+        },
+        "entity_query": {
+          "allow": true,
+          "components": [ "othello.Game", "othello.Color", "othello.Player" ]
+        }
+      }],
+      "load_balancing": {
+        "auto_hex_grid": {
+          "num_workers": 1
+         }
+      }
+    }
+  ]
+}
