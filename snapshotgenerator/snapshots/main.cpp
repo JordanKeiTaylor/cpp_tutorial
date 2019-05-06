@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    worker::SnapshotOutputStream out(ComponentRegistry(), argv[1]);
+    worker::SnapshotOutputStream out(ComponentRegistry(), "../../../snapshots/default.snapshot");
     worker::EntityId nextId = 1;
     worker::Option<std::string> err;
 
