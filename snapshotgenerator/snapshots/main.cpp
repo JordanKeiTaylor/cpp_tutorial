@@ -54,6 +54,25 @@ worker::Entity CreatePlayerEntry(bool black) {
     return e;
 }
 
+worker::Entity CreateExampleEntity() {
+    worker::Entity e;
+    e.Add<improbable::Position>( { { 0, 0, 0 } } );
+    e.Add<improbable::Metadata>( { "example_entity" } );
+    e.Add<improbable::Persistence>( {} );
+
+    auto managedWorkerRequirementSet = improbable::WorkerRequirementSet{
+            worker::List<improbable::WorkerAttributeSet>{{worker::List<std::string>{"example_attribute_of_managed_worker"}}}
+    };
+
+    e.Add<improbable::EntityAcl>( /* read */ { managedWorkerRequirementSet,
+                                                     /* write */ {
+                                                       { improbable::Position::ComponentId, managedWorkerRequirementSet },
+                                                       { improbable::EntityAcl::ComponentId, managedWorkerRequirementSet }
+                                               } } );
+
+    return e;
+}
+
 worker::Entity CreateDiscEntry(int64_t x, int64_t z, bool black) {
     worker::Entity e;
     e.Add<improbable::Position>( { { double(x) + 0.5, 0, double(z) + 0.5 } } );
@@ -86,8 +105,15 @@ int main(int argc, char *argv[]) {
 
     worker::SnapshotOutputStream out(ComponentRegistry(), argv[1]);
     worker::EntityId nextId = 1;
-
     worker::Option<std::string> err;
+
+    for( int a = 0; a < 10; a = a + 1 ) {
+        err = out.WriteEntity(nextId++, CreateExampleEntity());
+        if (err)
+            std::cerr << "ERR: " << *err << std::endl;      
+    }
+
+   
     err = out.WriteEntity(nextId++, CreateGameEntry());
     if (err)
         std::cerr << "ERR: " << *err << std::endl;
