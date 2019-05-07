@@ -17,7 +17,13 @@
             "entity_id_sharding": {
                 "numWorkers": 5
             }        
-          }
+        },
+        {
+            "layer": "example_attribute_of_example_worker",
+            "entity_id_sharding": {
+                "numWorkers": 2
+            }        
+        }
     ]
   },
   "workers": [
@@ -38,6 +44,21 @@
     },
     {
       "worker_type": "Managed",
+      "permissions": [{
+        "entity_creation": {
+          "allow": true
+        },
+        "entity_deletion": {
+          "allow": true
+        },
+        "entity_query": {
+          "allow": true,
+          "components": []
+        }
+      }]
+    },
+    {
+      "worker_type": "Example",
       "permissions": [{
         "entity_creation": {
           "allow": true

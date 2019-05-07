@@ -213,4 +213,302 @@ while (is_connected) {
 Build the project and start a local simulation. You should see the entities moving up and to the right.
 
 
-	###Feature 4: Now, use your knowledge to initialize multiple instances of the Managed worker, and add logic to the vector that removes entities from the vector once the worker loses authority. May need to read up on the authority change op.
+###Feature 4: Now, use your C++ knowledge to implement a more complex EntityWrapper class that moves the entities towards a present destination
+
+What if we wanted to implement more complex, destination to destination movement of the example entities? Like any action that happens in simulation steps, we would do this by changing the worker code we've written.
+
+To add a destination to the example entities, we could add a destination field to our local ExampleEntityclass. (To start, we'll set a random destination). 
+
+Then, every run of the game loop, we could send an update to Spatial to move the entity towards the destination we have saved for it locally. This has the implication that when the entity crosses boundaries, it will be assigned a new destination. If we wanted to change that, we could save the destination in Spatial as a component field, rather than simply maintaining it locally.
+
+For now, try modifying your ExampleEntity class so that it saves a destination for each entity. Add a step function that moves the entity towards the destination every game loop. 
+
+Your final EntityWrapper code might look something like this:
+
+```
+class EntityWrapper {
+
+ public:
+     worker::EntityId id;
+     improbable::Coordinates coords;
+     improbable::Coordinates destination;
+
+ public:
+      EntityWrapper(worker::EntityId given_id, improbable::Coordinates given_coords){
+        id = given_id;
+        coords = given_coords;
+        destination = improbable::Coordinates(
+           (double) getRandomNumber(-300,300)
+            ,(double) getRandomNumber(-300,300)
+            ,(double) getRandomNumber(-300,300)
+            );
+      }
+
+
+
+      worker::EntityId getId(){
+        return id;
+      }
+
+      improbable::Coordinates getCoordinates(){
+        return coords;
+      }
+
+      void newDestination(){
+        destination = improbable::Coordinates(
+           (double) getRandomNumber(-300,300)
+            ,(double) getRandomNumber(-300,300)
+            ,(double) getRandomNumber(-300,300)
+        );
+      }
+
+      improbable::Coordinates step(){
+
+        double x_distance = std::abs(destination.x() - coords.x());
+        double y_distance = std::abs(destination.y() - coords.y());
+        double z_distance = std::abs(destination.z() - coords.z());
+
+        double total = std::abs(destination.x() - coords.x()) + std::abs(destination.y() - coords.y()) + std::abs(destination.z() - coords.z());
+        double x_move = (x_distance/total) * 5;
+        double y_move = (y_distance/total) * 5;
+        double z_move = (z_distance/total) * 5;
+
+        double new_x;
+
+        if(destination.x()>coords.x()){
+            new_x = coords.x() + x_move;
+        } else {
+            new_x = coords.x() - x_move;
+        }
+
+        double new_y;
+
+        if(destination.y()>coords.y()){
+            new_y = coords.y() + y_move;
+        } else {
+            new_y = coords.y() - y_move;
+        }
+
+        double new_z;
+
+        if(destination.z()>coords.z()){
+            new_z = coords.z() + z_move;
+        } else {
+            new_z = coords.z() - z_move;
+        }
+
+        //remember to set a new destination once the entity is close enough to its old destination
+        if(x_distance< 5 &&  y_distance < 5 && z_distance < 5){
+            newDestination();
+        }
+
+        return improbable::Coordinates(new_x,new_y,new_z);
+      }
+
+
+};
+```
+
+We used this function to produce a random number
+
+```
+int getRandomNumber(int min, int max)
+{
+    static const double fraction = 1.0 / (RAND_MAX + 1.0);  // static used for efficiency, so we only calculate this value once
+    // evenly distribute the random number across our range
+    return min + static_cast<int>((max - min + 1) * (std::rand() * fraction));
+}
+```
+
+And you'll need to modify your game loop so that it uses the output of each step function to set the new Position component of the entity in Spatial.
+
+```
+while (is_connected) {
+        dispatcher.Process(connection.GetOpList(kGetOpListTimeoutInMilliseconds));
+    
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
+
+        for (auto &entityWrapper : wrappers) // access by reference to avoid copying
+        {  
+            improbable::Coordinates new_location = entityWrapper.step();
+            double new_x = new_location.x();
+            double new_y = new_location.y();
+            double new_z = new_location.z();
+
+             connection.SendComponentUpdate<improbable::Position>(entityWrapper.id,
+                improbable::Position::Update().set_coords(
+                    improbable::Coordinates
+                    (
+                        new_x,
+                        new_y,
+                        new_z
+                    )
+                )
+            );
+
+            entityWrapper.coords.set_x(new_x);
+            entityWrapper.coords.set_y(new_y);
+            entityWrapper.coords.set_z(new_z);
+        }
+
+    }
+```
+
+If you build and load the project you should now see the entities moving towards random destinations.
+
+
+###Feature 5: Spin up multiple instances of the Managed worker and try a different load balancing strategy
+
+So far, we've worked with a single instance of the managed worker. This is useful for local testing, and a small number of entities, but for more entities, well need more workers.
+
+Spatial achieves high entity counts by load balancing between multiple copies of workers, with configurable strategies for how load balancing is achieved.
+
+Load balancing configurations for all layers of workers is set in the top level launch configuration file. Navigate to that file, and change the load balancing strategy for the Managed worker to spin up 4 workers. Also change it to test out the sharding by entityId loadbalancing strategy, which splits up entities between workers by id rather than by geographic location.
+
+You'll probably need to reference the [launch configuration file documentation](https://docs.improbable.io/reference/13.7/shared/project-layout/launch-config#launch-configuration-file)
+
+(**Note that you may also need to change the configuration file format to reflect the latest version**).
+
+Your final config file should look like this (again, sorry for needing to update the format):
+
+```
+{
+  "template": "small",
+  "world": {
+    "chunkEdgeLengthMeters": 50,
+    "snapshots": {
+      "snapshotWritePeriodSeconds": 0
+    },
+    "dimensions": {
+      "xMeters": 1500,
+      "zMeters": 1500
+    }
+  },
+  "load_balancing": {
+    "layer_configurations": [
+        {
+            "layer": "example_attribute_of_managed_worker",
+            "entity_id_sharding": {
+                "numWorkers": 5
+            }        
+        }
+    ]
+  },
+  "workers": [
+    {
+      "worker_type": "External",
+      "permissions": [{
+        "entity_creation": {
+          "allow": true
+        },
+        "entity_deletion": {
+          "allow": true
+        },
+        "entity_query": {
+          "allow": true,
+          "components": []
+        }
+      }]
+    },
+    {
+      "worker_type": "Managed",
+      "permissions": [{
+        "entity_creation": {
+          "allow": true
+        },
+        "entity_deletion": {
+          "allow": true
+        },
+        "entity_query": {
+          "allow": true,
+          "components": []
+        }
+      }]
+    }
+  ]
+}
+
+```
+
+Now that you've changed the launch config, run the project locally. You should see 4 instances of the Managed worker present in the simulation, moving the entities between destinations.
+
+Reading list for this section:
+  - [The structure of the launch configuration file](https://docs.improbable.io/reference/13.7/shared/project-layout/launch-config#launch-configuration-file)
+  - [Load balancing options](https://docs.improbable.io/reference/13.7/shared/worker-configuration/load-balancing#load-balancing)
+
+###Feature 6: Modify the Managed worker startup script so that it updates its local record of entity state when it loses authority over an entity
+
+You may have noticed there is a slight problem with our current implementation of the Managed worker. We are using a vector to keep a local record of all the entities the worker has authority over, and sending component updates by referencing that vector. We are adding entities to the vector when we receive a message from Spatial letting us know a Position component we are authoritative over has entered our view.
+
+However, we are not doing anything to remove the entities we lose authority over from our vector, which is our local record of our view of the world. This means we are likely sending updates to entities after we lose authority over them, which will lead to errors.
+
+We need to remove entities from our local vector when we lose authority over those entities. To enable this type of syncing between local state and canonical server state, Spatial sends a message to a worker to indicate when there is about to be a change in its authority over a component. The function used to register callbacks to respond to those messages is called onAuthorityChange, and it is passed an op object that contains an enum as a field. [The enum indicates what type of authority change is about to happen](https://docs.improbable.io/reference/13.7/cppsdk/api-reference#worker-authoritychangeop-struct)
+
+Use the OnAuthorityChange function to remove entityWrappers from the vector when the worker is going to lose authority. You may need to track the index of the entitywrapper in the vector to accomplish this.
+
+Your final code should look something like this:
+
+```
+dispatcher.OnAuthorityChange<improbable::Position>([&](const worker::AuthorityChangeOp& op) {
+        std::cout << "Entity " << op.EntityId << " removed." << std::endl;
+
+        if(op.Authority == worker::Authority::kAuthorityLossImminent){
+            int indexInVector = entityIdToVectorIndex.at(op.EntityId);
+            std::cout << "Entity " << indexInVector << " removed." << std::endl;
+            wrappers.erase(wrappers.begin() + indexInVector);
+        }
+
+    });
+```
+
+You could have used a map to track the index of EntityWrappers in the vector like so:
+
+```
+std::vector<std::string> arguments;
+    std::vector<EntityWrapper> wrappers;
+    std::map<worker::EntityId, int> entityIdToVectorIndex;
+```
+
+```
+    dispatcher.OnAddComponent<improbable::Position>([&](const worker::AddComponentOp<improbable::Position>& op) {
+        std::cout << "Entity " << op.EntityId << " added." << std::endl;
+        entityIdToVectorIndex[op.EntityId] = wrappers.size();
+        wrappers.push_back(EntityWrapper(op.EntityId,op.Data.coords()));
+    });
+
+```
+
+Reading list for this section
+- [The authority enum that is passed to the callback](https://docs.improbable.io/reference/13.7/cppsdk/api-reference#worker-authoritychangeop-struct)
+
+
+###Feature 6: Add a new worker to the project to simulate a new component
+
+So far, we've worked with only a single worker, which is simulating Position specifically and entity movement more generally. What if we want to add another worker, to simulate a different component and layer of activity in the world.
+
+To add another worker you simply have to add another folder to the workers directory. The folder should be named the same as your worker (You'll have to reference the name in several places in your code). 
+
+To create a new worker, we'll copy the Managed worker directory, since it has a lot of the boilerplate code necessary for a C++ worker. We'll give it a new name, "Example" and add the resulting Example code.
+
+Ultimately, all workers are compiled to executable files that live in the build directory in the top level project folder. To avoid name collisions with the old Managed worker, youll need pdate the project code inside the Example worker in 4 places (this will also teach you how a worker is configured):
+
+  -In the name of spatialos.Managed.worker.json file. This is a [required configuration file for the worker](https://docs.improbable.io/reference/13.7/shared/project-layout/introduction#configuration-file), and it must have the same name as the worker. Change the name to spatialos.Example.worker.json
+
+  -Within the spatialos.Example.worker.json, where there are multiple references to the name of the binary file the worker will be compiled to. Currently these are all Managed@[OS].zip. Change these references to Example@[OS].zip. A find and replace would work well here.
+
+  - In the `/src/startup.cc` file, where the worker type parameter should be changed to Managed.
+
+  - In the CMakeLists.txt file, where every reference to ${PROJECT_NAME} should be changed to "Example" (the cmake file uses that variable to build Make files which referecne the zipped binary that will be created)
+
+   -Finally, (outside of the worker folder), In the launch configuration file we used earlier, to add a section configuring the worker (here, you can use the same configuration parameters as the Managed worker)
+
+Once you've changed those files, revert the startup script in the Example worker to the original in the CPPBlankProject so that the logic about moving the entities is removed.
+
+To see a running version of this (and final versions of those files), use commit ""
+
+If you build and run the project you should see a number of Example workers spun up as well.
+
+
+
+
+
