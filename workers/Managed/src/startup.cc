@@ -202,7 +202,7 @@ int main(int argc, char** argv) {
 
     dispatcher.OnAddComponent<improbable::Position>([&](const worker::AddComponentOp<improbable::Position>& op) {
         std::cout << "Entity " << op.EntityId << " added." << std::endl;
-        entityIdToVectorIndex.insert({op.EntityId,wrappers.size()});
+        entityIdToVectorIndex[op.EntityId] = wrappers.size();
         wrappers.push_back(EntityWrapper(op.EntityId,op.Data.coords()));
     });
 
