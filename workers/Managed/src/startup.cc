@@ -6,6 +6,7 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
+#include <map>
 
 // Use this to make a worker::ComponentRegistry.
 // For example use worker::Components<improbable::Position, improbable::Metadata> to track these common components
@@ -145,6 +146,7 @@ int main(int argc, char** argv) {
 
     std::vector<std::string> arguments;
     std::vector<EntityWrapper> wrappers;
+    std::map<worker::EntityId, int> entityIdToVectorIndex;
 
     // if no arguments are supplied, use the defaults for a local deployment
     if (argc == 1) {
@@ -200,9 +202,19 @@ int main(int argc, char** argv) {
 
     dispatcher.OnAddComponent<improbable::Position>([&](const worker::AddComponentOp<improbable::Position>& op) {
         std::cout << "Entity " << op.EntityId << " added." << std::endl;
+        entityIdToVectorIndex.insert({op.EntityId,wrappers.size()});
         wrappers.push_back(EntityWrapper(op.EntityId,op.Data.coords()));
     });
 
+    dispatcher.OnAuthorityChange<improbable::Position>([&](const worker::AuthorityChangeOp& op) {
+        std::cout << "Entity " << op.EntityId << " removed." << std::endl;
+        if(op.Authority == worker::Authority::kAuthorityLossImminent){
+            int indexInVector = entityIdToVectorIndex.at(op.EntityId);
+            std::cout << "Entity " << indexInVector << " removed." << std::endl;
+            wrappers.erase(wrappers.begin() + indexInVector);
+        }
+
+    });
 
     if (is_connected) {
         std::cout << "[local] Connected successfully to SpatialOS, listening to ops... " << std::endl;
@@ -211,7 +223,7 @@ int main(int argc, char** argv) {
     while (is_connected) {
         dispatcher.Process(connection.GetOpList(kGetOpListTimeoutInMilliseconds));
     
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
         for (auto &entityWrapper : wrappers) // access by reference to avoid copying
         {  
