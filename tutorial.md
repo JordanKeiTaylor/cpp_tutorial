@@ -1,44 +1,79 @@
 ## Tutorial overview
-	-The simulation was developed for tutorial purposes using Structured project Structure and the C++ worker SDK. The tutorial demonstrates how to go from the C++ blank project to a functional Brownian Motion roject with a single worker moving objects randomly in Brownian Motion.
+	-This project was developed for tutorial purposes using [Structured Project Layout](https://docs.improbable.io/reference/13.7/shared/glossary#structured-project-layout-spl) and the C++ worker SDK. 
 
-## What's included in this tutorial
-	-A snapshot generation script in "/snapshotgenerator"
-	-A blank managed worker in /workers/Managed
-	-A blank external worker (not directly referenced in the tutorial), in /workers/external
+  The tutorial demonstrates how to add functional random movement to a C++ blank project, teaching users about Authority, Interest, and writing worker code along the way.
 
+## What's included in this directory
+	-A snapshot generation script for generating initial simulation state in `CppBlankProject/snapshotgenerator`
+	-A blank managed worker in /workers/Managed. This will be the main worker we develop during the tutorial in this doc
+	-A blank external worker (not directly referenced in the tutorial, but extensible if users choose to do so), in /workers/external
 
-## Building the project...and generating a snapshot
-
-To build the project, access the top level directory from the command line. Run `spatial build`, then `spatial local start`
-
-Build the snapshot generator by accessing the snapshotgenerator directory using your command line. The snapshot generator is a project that uses the C++ worker snapshot API to generate a snapshot. Once in the snapshotgenerator, run `cmake -G "Unix Makefiles" ..`, which will produce executable files including files for  the main snapshotgenerator script, in main.cpp in `CppBlankProject/snapshotgenerator/snapshots/main.cpp`. 
-
-Produce a snapshot by accessing `CppBlankProject/snapshotgenerator/cmake-build/snapshots` Once in this folder run `make` This will generate a snapshot in the top level snapshots directory `/CppBlankProject/snapshots`, which will be used by the simulation.
 
 ## Pre-reading
 
-This tutorial expects that you are familiar with the basic concepts of SpatialOS, especially Spatial's ECS architecture, Authority and Interest.
+This tutorial expects that you are familiar with the core concepts of SpatialOS.
 
-Read this walkthrough prior to engaging with the tutorial if you aren't familiar with those concepts, or at any point during the tutorial if you need a refresher.
+If you come across a concept you don't know, or need a primer or explanation of code, reference the SpatialOS docs at https://docs.improbable.io/reference/13.7.
+
+
+## Building and running the project
+
+To build the project, access the top level directory from the command line. From there run `spatial build`.
+
+To run the project, use `spatial local launch` (This project already has a snapshot, and as a result is runnable -- more on that below)
+
+Build the snapshot generator script by accessing the snapshotgenerator directory at `CPPBlankProject/snapshotgenerator/` using your command line. The snapshot generator is a project that uses the C++ worker sdk to build a snapshot file, which is deposited in the top level snapshots folder.
+
+Once in the snapshotgenerator, cd into the `cmake-build` directory and run `cmake -G "Unix Makefiles" ..`. That will produce executable files including files for  the main snapshotgenerator script, which is in main.cpp in `CppBlankProject/snapshotgenerator/snapshots/main.cpp`. 
+
+Produce a snapshot by accessing `CppBlankProject/snapshotgenerator/cmake-build/snapshots` From there run `make` This will generate a snapshot in the top level snapshots directory `/CppBlankProject/snapshots`, which will be used by the simulation.
+
+You will need to rerun the two paragraphs above every time you change the snapshot generation script.
+
+We recommend you read about snapshots and initial state in Spatial here:
+
+-https://docs.improbable.io/reference/13.7/shared/operate/snapshot
 
 
 
-## Tutorial Walkthrough 
+## Feature Tutorial
 
-	### Feature 0: Familiarize yourself with the existing project and included workers by running a local simulation
+	### Feature 0: Familiarize yourself with the project and its included managed worker by using the Inspector
 
-From the top level folder, run spatial build, then spatial local start. Open the inspector v1 once the prompt with the http address appears. You should see that the simulation has ten example entities. These entities have been instantiated at the Play around with the inspector to familiarize yourself with the workflow for viewing components and authoritative worker. 
+First, build and run the project. Follow the command line output to view the inspector v1 in your browser. The inspector is a simple, browser based GUI for viewing the state of a running simulation.
 
-	###Feature 1: Make the managed worker authoritative over the Position component of the example entities
+Using the inspector, you should be able to see that the simulation has ten entities called example_entity. These entities have been instantiated using the snapshot generator script.
 
-If you click on individual entities in the inspector, you should be able to see the components attached to each example entity. Right now, the only components attached to these entities is the required SpatialOS position component that establishes an entities x y and z location in the world.
+Play around with the inspector to familiarize yourself with the workflow for viewing components and authoritative workers. Specifically, notice that if you click on an entities in the gui, you can see the details for that entity on the pane in the right. In the authoritative worker section you can see which workers are authoritative over the components attached to that entity.
 
-Because no worker has been assigned authority over this Position entity, the managed worker attached to the project cannot impact the worker. 
+Over the course of this tutorial, well implement movement of these example entities.
+
+Reading for this section:
+  -[What is a managed worker](https://docs.improbable.io/reference/13.7/shared/design/design-workers#managed-workers)
+  -[If you need a review of what entities and components are](https://docs.improbable.io/reference/13.7/shared/glossary#component)
+  -[Components are defined using schema files in the schema folder](https://docs.improbable.io/reference/13.7/shared/concepts/schema#schema)
+  -[Workers are processes defined in the workers folder, responsible for simulating the world. Workers are distributed across the world by SpatialOS, with configuration parameters for workers handled in the configuration file called "spatialos.<worker-type>.worker.json"](https://docs.improbable.io/reference/13.7/shared/project-layout/introduction)
+
+
+###Feature 1: Make the managed worker authoritative over the Position component of the example entities
+
+If you clicked on individual example_entities in the inspector, you should have seen that the Position components attached to each example entity have no worker that is authoritative over them. 
+
+The Position component is a required component in SpatialOS that designates an entities x,y, and z location in the world. Right now this is the only component on the example entities (besides the entity Acl, another component that establishes which workers have authority and interest in the components on the entity)
+
+Because the Managed worker has been assigned authority over this Position entity, the Managed worker attached to the project cannot impact the worker. 
+
+Making the Managed worker authoritative over the example entities Position will allow the worker to move the entities around the world.
 
 To give the managed worker authority over the Position component, go to the snapshot generation script in `CppBlankProject/snapshotgenerator/snapshots/main.cpp` 
-This is the script that uses the Snapshot generation namespace to create a snapshot file, defining the initial simulation state. 
+(This is the script that uses the Snapshot generation namespace to create a snapshot file, defining the initial simulation state. )
 
-The file contains a CreateExampleEntity script at line 10 which defines an entity template for an example_entity. The final version of that function should look something like this:
+The file contains a CreateExampleEntity function at line 10 which defines an entity template for the example entities. Later on this function is used to add the entities you saw to the snapshot.
+
+In the line that starts `e.Add<improbable::EntityAcl`, the Example Entities EntityAcl component is being defined as simulated by the managed worker (eg the managed worker has Authority over it.) Copy this format to give the managed worker Authority over the Position entity.
+
+
+ The final version of that function should look something like this:
 
 ```
 worker::Entity CreateExampleEntity() {
@@ -61,28 +96,43 @@ worker::Entity CreateExampleEntity() {
 }
 ```
 
-Now double check that you have successfully given the worker authority by running the simulation locally again. If the worker has successfully been given authority you should be able to click on one of the example entities, click on the Authoritative workers tab, and see the Managed worker listed next to the entities Position component.
+Once you are done double check that you have successfully given the worker authority by running the simulation locally again. 
 
-To see this working, check out commit "bdecac154d4cd5b893f02b4766e3e9810e917b80"
+If the worker has successfully been given authority, you should be able to click on one of the example entities, click on the Authoritative workers tab, and see the Managed worker listed next to the entities Position component.
 
-	###Feature 2: Set up a game loop and move one entity around the world randomly
+To see this step working, check out commit "bdecac154d4cd5b893f02b4766e3e9810e917b80" using git.
 
-Now that the worker has authority, you should be able to edit the managed worker to move the example entities around the world by modifying their Position components.
+Reading for this section:
+  -[Authority is when a worker has write access to a component; another important concept, Interest, is when a worker has read access only](https://docs.improbable.io/reference/13.7/shared/concepts/interest-authority#interest-and-authority)
+  -[The EntityAcl is a required component that defines which workers have authority and interest over the components on an entity](https://docs.improbable.io/reference/13.7/shared/schema/standard-schema-library#entityacl-required)
+
+###Feature 2: Set up a game loop and move one entity around the world randomly
+
+Now that the worker has Authority over the example entities' Position components, you should be able to edit the Managed Worker so that it moves the example entities around the world by modifying their Position components.
 
 To do this, head to the startup script in the src directory of the managed worker at `CppBlankProject/workers/Managed/src/startup.cc`
 
-This script currently contains a bare worker c++ template that establishes a connection with SpatialOS. The connection is established by the function at line 44. Take a look at this function.
+This script contains all the C++ logic that defines what the worker does once it is connected to SpatialOS. 
 
-Once a connection is established, you can use the connection object to interact with SpatialOS, including sending component updates for components the worker is authoritative over, or responding to component updates for components you have interest in but not authority over. 
+Like all SpatialOS workers, Managed is just a normal C++ process, which uses code generated by SpatialOS to create a connection to Spatial. Once the connection exists, it uses all the helper classes in the SpatialOS C++ sdk to do things like create entities, move entities, and generally simulate the world.
 
-SpatialOS will run the worker script you give it, distributing workers over the world. Typically users structure their managed workers as continuously running loops (eg "a game loop"), using some kind of control flow to ensure the loop only runs once within a certain timeframe, and enacts logic within that loop to send component updates and interact with the world.
+This script currently contains a bare worker c++ template that establishes a connection with SpatialOS. The connection is established by the function at line 44, called `ConnectWithReceptionist`. 
 
-The way to send component updates is via the connection function `sendComponentUpdate`.
+Once a connection is established, you can use the connection object to interact with SpatialOS, including sending component updates for components the worker is authoritative over, or responding to component updates for components you have interest in but not authority over. Read more about Operations to understand what helper functions are available.
 
-Implement a worker loop in the int main function that moves the entity with entityId 1 to position (0,0,0) and then position (5,5,5) and back. The loop should run once every 500 milliseconds. There are lots of ways to implement a game loop. A simple way to do it here would be to use the chrono and thread packages. These are already imported in the startup script. Using those libraries, you can force the current thread to sleep for 500 milliseconds ` std::this_thread::sleep_for(std::chrono::milliseconds(500));
-`
+SpatialOS will run the worker script you give it, distributing workers over the world. Through the generated classes and connection object, the script will have access to the components it has interest in that exist in its part of the world.
 
-Your final code should look (something) like this:
+Typically users structure their managed workers as continuously running loops (eg "a game loop"), in which the worker repeatedly takes actions that constitute simulating their part of the world. (For example, moving an entity towards a destination every 100 milliseconds.)
+
+The way to send component updates is via the connection function `sendComponentUpdate`. That component has [the signature described here](https://docs.improbable.io/reference/13.7/javasdk/using/sending-data#sending-component-updates) It takes the entity's id, and an instantiation of the Update class for the component you want to update.
+
+Implement a worker loop in the main function of the startup script. For now, it should just move the entity with entityId 1 to position (0,0,0), and then to position (5,5,5), and then back. Try to structure the loop so that it runs once every 500 milliseconds.
+
+ A simple way to implement a loop in C++ is touse the chrono and thread packages. These are already imported in the startup script.
+
+Using those libraries, you can force the current thread to sleep for 500 milliseconds with the statement `std::this_thread::sleep_for(std::chrono::milliseconds(500));`
+
+Once you've written the game loop your final code should look something like this (replacing the while is connected statement currently at line 119) :
 
 ```
 while (is_connected) {
@@ -117,36 +167,45 @@ while (is_connected) {
 
 ```
 
-Build the project and run spatial local start. If everythings worked, you will now see a single entity, the one with entity id 1, flashing back and forth between two positions.
+Build the project and launch it locally. If everythings worked, you will now see a single entity,with entity id 1, flashing back and forth between two positions.
 
-To see this functioning, checkout and run commit "6f58e19a055e6137c32784d6e240399d6de9b68e"
+To see this functioning, you can checkout and run the commit labeled "6f58e19a055e6137c32784d6e240399d6de9b68e"
 
-
-	###Feature 3: Capture all the Position components the worker is authoritative over locally, move them all together
-
-
-As you've noticed, to send a component update in SpatialOS, you need the entity id of that entity. Workers are informed of the ids of the entities that are present in the workers portion of the world, and the ids of entities containing components that the worker has interest in or authority over.
-
-Typically, game loops keep track of the entities and components in their view of the world containing some type of local . This makes control flow easier. (For example, recording all the entities for which you have authority over their Position in an array, so that you can use that array in your game loop to send Position updates every second. You can also record the old state in your local data structure for reference).
-
-There are a few callbacks to get access to the components and entities that enter a workers view of the world:
-
-OnAuthorityChange<typename T>: Runs when a worker is given authority over a component, in other words when an entity containing that component enters the workers area of the world. Also run when the worker loses authority. The op contained in the callback will have the initial component state included as well as the entity id and an enum indicating the status of the workers authority.
+Reading List for this section
+- [Operations or how workers are implemented and communicate with Spatial](https://docs.improbable.io/reference/13.7/shared/design/operations#operations-how-workers-communicate-with-spatialos)
+- [Sending component updates when you have authority](https://docs.improbable.io/reference/13.7/cppsdk/using/sending-data#sending-data-to-spatialos)
+- [Responding to data received from Spatial, when you have interest, using the Spatial OS dispatcher](https://docs.improbable.io/reference/13.7/cppsdk/using/receiving-data#dispatcher-callbacks)
 
 
-OnOnAddComponent<typename T> Runs when an entity in a workers view of the world has a component added to it. This will be run at the beginning of a simulation as components are added to entities. The op contained in the callback will have the initial component state included as well as the entity Id.
+###Feature 3: Capture all the Position components the worker is authoritative over locally, move them all together
 
-OnEntityAdd Runs when an entity enters a workers view of the world. Includes the entityid of the entity.
 
-Create an Entity Wrapper class in the startup script that can hold the Entity Ids and coordinates of the example entities,whose Position components the managed worker is now Authoritative over.
+As you've noticed, to send a component update in SpatialOS, you need the entity id of that entity. Spatial informs workers of the ids of the entities that are present in the workers portion of the world when they enter their portion of the world. It also informs workers of the ids of entities containing components that the worker has interest in or authority over.
 
-Create a C++ vector to hold all the entity wrappers. Register a callback with any of the methods above that will initialize an EntityWrapper for each entity and add it to the vector.
+These messages from Spatial containing important information about the state of entities in their part of the world come in through the dispatcher. You can register callbacks on the dispatcher, so that certain functions are run upon the worker receiving certain messages from Spatial.
 
-Use the vector to update the position of the entities each loop.
+Typically, workers are structured to keep track of the local state of entities and components in their view of the world in their type of local data structure. This allows easy reference to relevant components within a game loop, and easier control flow. (For example, recording all the entities for which the worker has authority over their Position in an array, so that you can use that array in your game loop to send Position updates every second).
 
-Your code should look something like this:
+There are a few convenient callbacks that can be used to set initial local state for components and entities when they enter a workers view of the world. Remember that if a worker has authority over a certain kind of component, it will be given authority over the instance of that component attached to a specific entity when the entity carrying the component enters the workers area.
 
-The EntityWrapper class
+Some of these callbacks that are useful to capture initial state are:
+
+`OnAuthorityChange<typename T>: Runs when a worker is given authority over a component. Also run when the worker loses authority. The op contained in the callback will describes the initial component state as well as the entity id. It also cotnains an enum indicating the status of the workers authority.`
+
+
+`OnAddComponent<typename T> Runs when an entity in a workers view of the world has a component added to it. This will be run at the beginning of a simulation as components are added to entities at startup. The op contained in the callback will have the initial component state included as well as the entity Id.`
+
+`OnEntityAdd: Runs when an entity enters a workers view of the world. Includes the entityid of the entity.`
+
+Create an Entity Wrapper class in the Managed worker startup script. The class should be able to hold the Entity Id and the coordinates of the example entities as fields.
+
+Create a C++ vector to hold all the entity wrappers. Register a callback with any of the methods above so that when a message is receieved from Spatial when that entity is added to the workers view of the worlds, an EntityWrapper will be added to the vector.
+
+Then rewrite the game loop so that it uses vector to update the position of the entities each loop based on their old positions. It should increment their x, y, and z components by 1 each loop.
+
+In the end, your code should look something like this:
+
+The EntityWrapper class:
 
 ```
 class EntityWrapper {
@@ -175,8 +234,17 @@ class EntityWrapper {
 };
 ```
 
-The vector `  std::vector<EntityWrapper> wrappers;`
+The vector definition ` std::vector<EntityWrapper> wrappers;`
 
+The callback registration:
+
+```
+    dispatcher.OnAddComponent<improbable::Position>([&](const worker::AddComponentOp<improbable::Position>& op) {
+        std::cout << "Entity " << op.EntityId << " added." << std::endl;
+        wrappers.push_back(EntityWrapper(op.EntityId,op.Data.coords()));
+        entities.push_back(op.EntityId);
+    });
+```
 
 And the modified game loop: 
 ```
@@ -214,5 +282,10 @@ Build the project and start a local simulation. You should see the entities movi
 
 To see this working, checkout commit "afea5e7865f4fa39656be26f19533dbebccbab02"
 
+Reading list for this step:
+  - All messages the dispatcher provides to workers(https://docs.improbable.io/reference/13.7/cppsdk/using/receiving-data)
+  - Processing operations in C++(https://docs.improbable.io/reference/13.7/cppsdk/using/receiving-data)
 
-	###Feature 4: Now, use your knowledge to initialize multiple instances of the Managed worker, and add logic to the vector that removes entities from the vector once the worker loses authority. May need to read up on the authority change op.
+
+
+###Feature 4: Now, use your knowledge to initialize multiple instances of the Managed worker; and add logic to the vector that removes entities from the vector once the worker loses authority.  
