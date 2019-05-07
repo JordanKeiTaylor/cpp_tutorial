@@ -23,5 +23,4 @@ snapshots/CMakeFiles/create_snapshot.dir/main.cpp.o: dependencies/worker_sdk/inc
 snapshots/CMakeFiles/create_snapshot.dir/main.cpp.o: dependencies/worker_sdk/include/improbable/worker.h
 snapshots/CMakeFiles/create_snapshot.dir/main.cpp.o: dependencies/worker_sdk/include/improbable/worker_protocol.h
 snapshots/CMakeFiles/create_snapshot.dir/main.cpp.o: generated_src/improbable/standard_library.h
-snapshots/CMakeFiles/create_snapshot.dir/main.cpp.o: generated_src/othello.h
 

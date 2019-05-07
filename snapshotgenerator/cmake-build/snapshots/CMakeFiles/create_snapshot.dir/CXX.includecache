@@ -13,8 +13,6 @@ improbable/standard_library.h
 -
 iostream
 -
-othello.h
--
 
 dependencies/worker_sdk/include/improbable/collections.h
 cstddef
@@ -243,20 +241,6 @@ stdint.h
 -
 
 generated_src/improbable/standard_library.h
-improbable/collections.h
--
-improbable/worker.h
--
-cstddef
--
-cstdint
--
-set
--
-string
--
-
-generated_src/othello.h
 improbable/collections.h
 -
 improbable/worker.h

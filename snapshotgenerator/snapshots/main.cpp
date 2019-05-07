@@ -2,10 +2,8 @@
 #include <improbable/standard_library.h>
 #include <iostream>
 
-#include <othello.h>
-
 using ComponentRegistry = worker::Components<improbable::Position, improbable::Metadata, improbable::EntityAcl,
-                improbable::Persistence, othello::Color, othello::Game, othello::Player, othello::TurnTaker>;
+                improbable::Persistence>;
 
 worker::Entity CreateExampleEntity() {
     worker::Entity e;
@@ -19,7 +17,6 @@ worker::Entity CreateExampleEntity() {
 
     e.Add<improbable::EntityAcl>( /* read */ { managedWorkerRequirementSet,
                                                      /* write */ {
-                                                       { improbable::Position::ComponentId, managedWorkerRequirementSet },
                                                        { improbable::EntityAcl::ComponentId, managedWorkerRequirementSet }
                                                } } );
 

@@ -16,31 +16,6 @@ const int ErrorExitStatus = 1;
 const std::string kLoggerName = "startup.cc";
 const std::uint32_t kGetOpListTimeoutInMilliseconds = 100;
 
-class EntityWrapper {
-
- public:
-     worker::EntityId id;
-     improbable::Coordinates coords;
-
- public:
-      EntityWrapper(worker::EntityId given_id, improbable::Coordinates given_coords){
-        id = given_id;
-        coords = given_coords;
-      }
-
-
-
-      worker::EntityId getId(){
-        return id;
-      }
-
-      improbable::Coordinates getCoordinates(){
-        return coords;
-      }
-
-
-};
-
 worker::Connection ConnectWithReceptionist(const std::string hostname,
                                            const std::uint16_t port,
                                            const std::string& worker_id,
@@ -83,7 +58,6 @@ int main(int argc, char** argv) {
     };
 
     std::vector<std::string> arguments;
-    std::vector<EntityWrapper> wrappers;
 
     // if no arguments are supplied, use the defaults for a local deployment
     if (argc == 1) {
@@ -137,11 +111,6 @@ int main(int argc, char** argv) {
         std::cout << "[remote] " << op.Message << std::endl;
     });
 
-    dispatcher.OnAddComponent<improbable::Position>([&](const worker::AddComponentOp<improbable::Position>& op) {
-        std::cout << "Entity " << op.EntityId << " added." << std::endl;
-        wrappers.push_back(EntityWrapper(op.EntityId,op.Data.coords()));
-    });
-
 
     if (is_connected) {
         std::cout << "[local] Connected successfully to SpatialOS, listening to ops... " << std::endl;
@@ -149,30 +118,6 @@ int main(int argc, char** argv) {
 
     while (is_connected) {
         dispatcher.Process(connection.GetOpList(kGetOpListTimeoutInMilliseconds));
-    
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-
-        for (auto &entityWrapper : wrappers) // access by reference to avoid copying
-        {  
-            double new_x = entityWrapper.coords.x() + 1;
-            double new_y = entityWrapper.coords.y() + 1;
-            double new_z = entityWrapper.coords.z() + 1;
-
-             connection.SendComponentUpdate<improbable::Position>(entityWrapper.id,
-                improbable::Position::Update().set_coords(
-                    improbable::Coordinates
-                    (
-                        new_x,
-                        new_y,
-                        new_z
-                    )
-                )
-            );
-
-            entityWrapper.coords.set_x(new_x);
-            entityWrapper.coords.set_y(new_y);
-            entityWrapper.coords.set_z(new_z);
-        }
 
     }
 
