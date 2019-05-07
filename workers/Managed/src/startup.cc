@@ -21,11 +21,13 @@ class EntityWrapper {
  public:
      worker::EntityId id;
      improbable::Coordinates coords;
+     improbable::Coordinates destination;
 
  public:
       EntityWrapper(worker::EntityId given_id, improbable::Coordinates given_coords){
         id = given_id;
         coords = given_coords;
+        destination = improbable::Coordinates(0,100,300);
       }
 
 
@@ -36,6 +38,19 @@ class EntityWrapper {
 
       improbable::Coordinates getCoordinates(){
         return coords;
+      }
+
+      improbable::Coordinates step(){
+        double total = std::abs(destination.x() - coords.x()) + std::abs(destination.y() - coords.y()) + std::abs(destination.z() - coords.z());
+        double x_move = (std::abs(destination.x() - coords.x())/total) * 5;
+        double y_move = (std::abs(destination.y() - coords.y())/total) * 5;
+        double z_move = (std::abs(destination.z() - coords.z())/total) * 5;
+
+        double new_x = coords.x() + x_move;
+        double new_y = coords.y() + y_move;
+        double new_z = coords.z() + z_move;
+
+        return improbable::Coordinates(new_x,new_y,new_z);
       }
 
 
@@ -154,9 +169,10 @@ int main(int argc, char** argv) {
 
         for (auto &entityWrapper : wrappers) // access by reference to avoid copying
         {  
-            double new_x = entityWrapper.coords.x() + 1;
-            double new_y = entityWrapper.coords.y() + 1;
-            double new_z = entityWrapper.coords.z() + 1;
+            improbable::Coordinates new_location = entityWrapper.step();
+            double new_x = new_location.x();
+            double new_y = new_location.y();
+            double new_z = new_location.z();
 
              connection.SendComponentUpdate<improbable::Position>(entityWrapper.id,
                 improbable::Position::Update().set_coords(
