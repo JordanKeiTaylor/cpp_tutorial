@@ -16,6 +16,14 @@ const int ErrorExitStatus = 1;
 const std::string kLoggerName = "startup.cc";
 const std::uint32_t kGetOpListTimeoutInMilliseconds = 100;
 
+
+int getRandomNumber(int min, int max)
+{
+    static const double fraction = 1.0 / (RAND_MAX + 1.0);  // static used for efficiency, so we only calculate this value once
+    // evenly distribute the random number across our range
+    return min + static_cast<int>((max - min + 1) * (std::rand() * fraction));
+}
+
 class EntityWrapper {
 
  public:
@@ -27,7 +35,11 @@ class EntityWrapper {
       EntityWrapper(worker::EntityId given_id, improbable::Coordinates given_coords){
         id = given_id;
         coords = given_coords;
-        destination = improbable::Coordinates(0,100,300);
+        destination = improbable::Coordinates(
+           (double) getRandomNumber(-300,300)
+            ,(double) getRandomNumber(-300,300)
+            ,(double) getRandomNumber(-300,300)
+            );
       }
 
 
@@ -40,15 +52,47 @@ class EntityWrapper {
         return coords;
       }
 
-      improbable::Coordinates step(){
-        double total = std::abs(destination.x() - coords.x()) + std::abs(destination.y() - coords.y()) + std::abs(destination.z() - coords.z());
-        double x_move = (std::abs(destination.x() - coords.x())/total) * 5;
-        double y_move = (std::abs(destination.y() - coords.y())/total) * 5;
-        double z_move = (std::abs(destination.z() - coords.z())/total) * 5;
+      void newDestination(){
+        destination = improbable::Coordinates(
+           (double) getRandomNumber(-300,300)
+            ,(double) getRandomNumber(-300,300)
+            ,(double) getRandomNumber(-300,300)
+        );
+      }
 
-        double new_x = coords.x() + x_move;
-        double new_y = coords.y() + y_move;
-        double new_z = coords.z() + z_move;
+      improbable::Coordinates step(){
+
+        double x_distance = std::abs(destination.x() - coords.x());
+        double y_distance = std::abs(destination.y() - coords.y());
+        double z_distance = std::abs(destination.z() - coords.z());
+
+        double total = std::abs(destination.x() - coords.x()) + std::abs(destination.y() - coords.y()) + std::abs(destination.z() - coords.z());
+        double x_move = (x_distance/total) * 5;
+        double y_move = (y_distance/total) * 5;
+        double z_move = (z_distance/total) * 5;
+
+        double new_x;
+        if(destination.x()>coords.x()){
+            new_x = coords.x() + x_move;
+        } else {
+            new_x = coords.x() - x_move;
+        }
+        double new_y;
+        if(destination.y()>coords.y()){
+            new_y = coords.y() + y_move;
+        } else {
+            new_y = coords.y() - y_move;
+        }
+        double new_z;
+        if(destination.z()>coords.z()){
+            new_z = coords.z() + z_move;
+        } else {
+            new_z = coords.z() - z_move;
+        }
+
+        if(x_distance< 5 &&  y_distance < 5 && z_distance < 5){
+            newDestination();
+        }
 
         return improbable::Coordinates(new_x,new_y,new_z);
       }
@@ -63,6 +107,8 @@ worker::Connection ConnectWithReceptionist(const std::string hostname,
     auto future = worker::Connection::ConnectAsync(ComponentRegistry{}, hostname, port, worker_id, connection_parameters);
     return future.Get();
 }
+
+
 
 std::string get_random_characters(size_t count) {
     const auto randchar = []() -> char {
