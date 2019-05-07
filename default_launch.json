@@ -10,6 +10,16 @@
       "zMeters": 1500
     }
   },
+  "load_balancing": {
+    "layer_configurations": [
+        {
+            "layer": "example_attribute_of_managed_worker",
+            "entity_id_sharding": {
+                "numWorkers": 5
+            }        
+          }
+    ]
+  },
   "workers": [
     {
       "worker_type": "External",
@@ -39,12 +49,7 @@
           "allow": true,
           "components": []
         }
-      }],
-      "load_balancing": {
-        "auto_hex_grid": {
-          "num_workers": 4
-         }
-      }
+      }]
     }
   ]
 }
