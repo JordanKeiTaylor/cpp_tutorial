@@ -1,0 +1,9 @@
+/Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/workers/Example/cmake_build/CMakeFiles/rebuild_cache.dir
+/Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/workers/Example/cmake_build/CMakeFiles/edit_cache.dir
+/Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/workers/Example/cmake_build/CMakeFiles/ExampleZip.dir
+/Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/workers/Example/cmake_build/CMakeFiles/Example.dir
+/Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/workers/Example/cmake_build/WorkerSdk/CMakeFiles/rebuild_cache.dir
+/Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/workers/Example/cmake_build/WorkerSdk/CMakeFiles/edit_cache.dir
+/Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/workers/Example/cmake_build/Schema/CMakeFiles/rebuild_cache.dir
+/Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/workers/Example/cmake_build/Schema/CMakeFiles/edit_cache.dir
+/Users/jordantaylor/Desktop/newcpptutorial/CppBlankProject/workers/Example/cmake_build/Schema/CMakeFiles/Schema.dir
