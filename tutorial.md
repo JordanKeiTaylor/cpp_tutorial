@@ -213,13 +213,11 @@ while (is_connected) {
 Build the project and start a local simulation. You should see the entities moving up and to the right.
 
 
-###Feature 4: Now, use your C++ knowledge to implement a more complex EntityWrapper class that moves the entities towards a present destination
+###Feature 4: Now, use your C++ knowledge to implement a more complex EntityWrapper class. That class will move the entities towards a present destination
 
-What if we wanted to implement more complex, destination to destination movement of the example entities? Like any action that happens in simulation steps, we would do this by changing the worker code we've written.
+To add a destination to the example entities, we could add a destination Component to our local ExampleEntityclass. (To start, we'll set a random destination). 
 
-To add a destination to the example entities, we could add a destination field to our local ExampleEntityclass. (To start, we'll set a random destination). 
-
-Then, every run of the game loop, we could send an update to Spatial to move the entity towards the destination we have saved for it locally. This has the implication that when the entity crosses boundaries, it will be assigned a new destination. If we wanted to change that, we could save the destination in Spatial as a component field, rather than simply maintaining it locally.
+Then, to simulate entity movement, we would send repeated updates to Spatial to rewrite the entity's Position at intermdiate positions between the origin and the destination. This approach would imply that when the entity crosses boundaries, it would be assigned a new destination. If we wanted to change that, we could save the destination in Spatial, as a component field, rather than simply maintaining it locally in our worker code.
 
 For now, try modifying your ExampleEntity class so that it saves a destination for each entity. Add a step function that moves the entity towards the destination every game loop. 
 
@@ -363,7 +361,7 @@ So far, we've worked with a single instance of the managed worker. This is usefu
 
 Spatial achieves high entity counts by load balancing between multiple copies of workers, with configurable strategies for how load balancing is achieved.
 
-Load balancing configurations for all layers of workers is set in the top level launch configuration file. Navigate to that file, and change the load balancing strategy for the Managed worker to spin up 4 workers. Also change it to test out the sharding by entityId loadbalancing strategy, which splits up entities between workers by id rather than by geographic location.
+Load balancing configurations for all layers of workers is set in the top level launch configuration file. Navigate to that file, and change the load balancing strategy for the Managed worker to spin up 4 workers. Also, change it so that it employs the sharding by entityId loadbalancing strategy, which splits up entities between workers by id, rather than by geographic location.
 
 You'll probably need to reference the [launch configuration file documentation](https://docs.improbable.io/reference/13.7/shared/project-layout/launch-config#launch-configuration-file)
 
@@ -436,11 +434,11 @@ Reading list for this section:
   - [The structure of the launch configuration file](https://docs.improbable.io/reference/13.7/shared/project-layout/launch-config#launch-configuration-file)
   - [Load balancing options](https://docs.improbable.io/reference/13.7/shared/worker-configuration/load-balancing#load-balancing)
 
-###Feature 6: Modify the Managed worker startup script so that it updates its local record of entity state when it loses authority over an entity
+###Feature 6: Modify the Managed worker startup script so that it updates its local record of entity state upon Authority loss
 
-You may have noticed there is a slight problem with our current implementation of the Managed worker. We are using a vector to keep a local record of all the entities the worker has authority over, and sending component updates by referencing that vector. We are adding entities to the vector when we receive a message from Spatial letting us know a Position component we are authoritative over has entered our view.
+You may have noticed there is a slight problem with our current implementation of the Managed worker. Recall, we are using a vector to keep a local record of all the entities the worker has authority over, and sending component updates by referencing that vector. We are adding entities to the vector when we receive a message from Spatial letting us know that a Position component has entered our view.
 
-However, we are not doing anything to remove the entities we lose authority over from our vector, which is our local record of our view of the world. This means we are likely sending updates to entities after we lose authority over them, which will lead to errors.
+What we  are not doing is taking any action to remove the entities we lose authority over from our vector. This means we are likely sending updates to entities after we lose authority over them, which can lead to errors.
 
 We need to remove entities from our local vector when we lose authority over those entities. To enable this type of syncing between local state and canonical server state, Spatial sends a message to a worker to indicate when there is about to be a change in its authority over a component. The function used to register callbacks to respond to those messages is called onAuthorityChange, and it is passed an op object that contains an enum as a field. [The enum indicates what type of authority change is about to happen](https://docs.improbable.io/reference/13.7/cppsdk/api-reference#worker-authoritychangeop-struct)
 
@@ -482,15 +480,15 @@ Reading list for this section
 - [The authority enum that is passed to the callback](https://docs.improbable.io/reference/13.7/cppsdk/api-reference#worker-authoritychangeop-struct)
 
 
-###Feature 6: Add a new worker to the project to simulate a new component
+###Feature 7: Add a new worker to the project to simulate a new component
 
 So far, we've worked with only a single worker, which is simulating Position specifically and entity movement more generally. What if we want to add another worker, to simulate a different component and layer of activity in the world.
 
-To add another worker you simply have to add another folder to the workers directory. The folder should be named the same as your worker (You'll have to reference the name in several places in your code). 
+To add another worker you simply have to add another folder to the workers directory. The folder should be named the same thing as your worker (Note wou'll have to reference the worker name in several places in your code). 
 
-To create a new worker, we'll copy the Managed worker directory, since it has a lot of the boilerplate code necessary for a C++ worker. We'll give it a new name, "Example" and add the resulting Example code.
+To create a new worker, we'll copy the Managed worker directory, as that directory contains a lot of the boilerplate code necessary for a C++ worker. We'll give the directory a new name, "Example" and add the resulting Example code.
 
-Ultimately, all workers are compiled to executable files that live in the build directory in the top level project folder. To avoid name collisions with the old Managed worker, youll need pdate the project code inside the Example worker in 4 places (this will also teach you how a worker is configured):
+Ultimately, all workers are compiled to executable files that live in the build directory in the SpatialOS project folder. To avoid name collisions with the old Managed worker, youll need to update the project code inside the Example worker in 4 places (this will also teach you how a worker is configured):
 
   -In the name of spatialos.Managed.worker.json file. This is a [required configuration file for the worker](https://docs.improbable.io/reference/13.7/shared/project-layout/introduction#configuration-file), and it must have the same name as the worker. Change the name to spatialos.Example.worker.json
 
@@ -503,8 +501,6 @@ Ultimately, all workers are compiled to executable files that live in the build 
    -Finally, (outside of the worker folder), In the launch configuration file we used earlier, to add a section configuring the worker (here, you can use the same configuration parameters as the Managed worker)
 
 Once you've changed those files, revert the startup script in the Example worker to the original in the CPPBlankProject so that the logic about moving the entities is removed.
-
-To see a running version of this (and final versions of those files), use commit ""
 
 If you build and run the project you should see a number of Example workers spun up as well.
 
